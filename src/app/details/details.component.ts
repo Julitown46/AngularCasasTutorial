@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {ActivatedRoute} from '@angular/router';
 import {HousingService} from '../housing.service';
 import {HousingLocation} from '../housinglocation';
-import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 @Component({
   selector: 'app-details',
   imports: [CommonModule, ReactiveFormsModule],
@@ -31,9 +31,9 @@ import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
         <h2 class="section-heading">Apply now to live here</h2>
         <form [formGroup]="applyForm" (submit)="submitApplication()">
           <label for="first-name">First Name</label>
-          <input id="first-name" type="text" formControlName="firstName" />
+          <input id="first-name" type="text" formControlName="firstName" required/>
           <label for="last-name">Last Name</label>
-          <input id="last-name" type="text" formControlName="lastName" />
+          <input id="last-name" type="text" formControlName="lastName" required/>
           <label for="email">Email</label>
           <input id="email" type="email" formControlName="email" />
           <button type="submit" class="primary">Apply now</button>
@@ -48,9 +48,9 @@ export class DetailsComponent {
   housingService = inject(HousingService);
   housingLocation: HousingLocation | undefined;
   applyForm = new FormGroup({
-    firstName: new FormControl(''),
-    lastName: new FormControl(''),
-    email: new FormControl(''),
+    firstName: new FormControl(localStorage.getItem('firstName'), Validators.required),
+    lastName: new FormControl(localStorage.getItem('lastName'), Validators.required),
+    email: new FormControl(localStorage.getItem('email'), Validators.email),
   });
   constructor() {
     const housingLocationId = parseInt(this.route.snapshot.params['id'], 10);
@@ -58,11 +58,18 @@ export class DetailsComponent {
       this.housingLocation = housingLocation;
     });
   }
+
   submitApplication() {
-    this.housingService.submitApplication(
-      this.applyForm.value.firstName ?? '',
-      this.applyForm.value.lastName ?? '',
-      this.applyForm.value.email ?? '',
-    );
+    if (this.applyForm.valid) {
+      this.housingService.submitApplication(
+        this.applyForm.value.firstName ?? '',
+        this.applyForm.value.lastName ?? '',
+        this.applyForm.value.email ?? '',
+      );
+
+      localStorage.setItem('firstName', this.applyForm.value.firstName ?? '');
+      localStorage.setItem('lastName', this.applyForm.value.lastName ?? '');
+      localStorage.setItem('email', this.applyForm.value.email ?? '');
+    }
   }
 }
