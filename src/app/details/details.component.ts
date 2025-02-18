@@ -64,16 +64,20 @@ export class DetailsComponent {
   route: ActivatedRoute = inject(ActivatedRoute);
   housingService = inject(HousingService);
   housingLocation: HousingLocation | undefined;
+  formData = JSON.parse(localStorage.getItem("formData") ?? "{}");
   applyForm = new FormGroup({
-    firstName: new FormControl(localStorage.getItem('firstName'), Validators.required),
-    lastName: new FormControl(localStorage.getItem('lastName'), Validators.required),
-    email: new FormControl(localStorage.getItem('email'), Validators.email),
+    firstName: new FormControl("", Validators.required),
+    lastName: new FormControl("", Validators.required),
+    email: new FormControl("", Validators.email),
   });
   constructor() {
     const housingLocationId = parseInt(this.route.snapshot.params['id'], 10);
     this.housingService.getHousingLocationById(housingLocationId).then((housingLocation) => {
       this.housingLocation = housingLocation;
     });
+    if (localStorage.getItem("formData")) {
+      this.applyForm.setValue(JSON.parse(localStorage.getItem("formData") ?? "{}"));
+    }
   }
 
   submitApplication() {
@@ -84,9 +88,7 @@ export class DetailsComponent {
         this.applyForm.value.email ?? '',
       );
 
-      localStorage.setItem('firstName', this.applyForm.value.firstName ?? '');
-      localStorage.setItem('lastName', this.applyForm.value.lastName ?? '');
-      localStorage.setItem('email', this.applyForm.value.email ?? '');
+      localStorage.setItem("formData", JSON.stringify(this.applyForm.value));
     }
   }
 }
