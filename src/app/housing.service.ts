@@ -1,10 +1,13 @@
 import {Injectable} from '@angular/core';
 import {HousingLocation} from './housinglocation';
+import { HttpClient } from '@angular/common/http';
 @Injectable({
   providedIn: 'root',
 })
 export class HousingService {
   url = 'http://localhost:3000/locations';
+
+
   async getAllHousingLocations(): Promise<HousingLocation[]> {
     const data = await fetch(this.url);
     return (await data.json()) ?? [];
@@ -17,4 +20,14 @@ export class HousingService {
     // tslint:disable-next-line
     console.log(firstName, lastName, email);
   }
+
+  addCasa(casa: HousingLocation) {
+    return fetch(this.url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(casa)
+    }).then(response => response.json());
+}
 }

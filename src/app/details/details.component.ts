@@ -64,7 +64,6 @@ export class DetailsComponent {
   route: ActivatedRoute = inject(ActivatedRoute);
   housingService = inject(HousingService);
   housingLocation: HousingLocation | undefined;
-  formData = JSON.parse(localStorage.getItem("formData") ?? "{}");
   applyForm = new FormGroup({
     firstName: new FormControl("", Validators.required),
     lastName: new FormControl("", Validators.required),
@@ -75,9 +74,7 @@ export class DetailsComponent {
     this.housingService.getHousingLocationById(housingLocationId).then((housingLocation) => {
       this.housingLocation = housingLocation;
     });
-    if (localStorage.getItem("formData")) {
-      this.applyForm.setValue(JSON.parse(localStorage.getItem("formData") ?? "{}"));
-    }
+    
   }
 
   submitApplication() {
@@ -88,7 +85,7 @@ export class DetailsComponent {
         this.applyForm.value.email ?? '',
       );
 
-      localStorage.setItem("formData", JSON.stringify(this.applyForm.value));
+    
     }
   }
 }
