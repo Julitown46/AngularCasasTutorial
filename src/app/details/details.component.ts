@@ -1,9 +1,11 @@
-import {Component, inject} from '@angular/core';
+import {AfterViewInit, Component, inject, OnDestroy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ActivatedRoute} from '@angular/router';
 import {HousingService} from '../housing.service';
 import {HousingLocation} from '../housinglocation';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import * as L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 @Component({
   selector: 'app-details',
   imports: [CommonModule, ReactiveFormsModule],
@@ -55,12 +57,13 @@ import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/
         <button style="background-color: lightgrey; border-color: lightgrey"
             *ngIf="!applyForm.valid" type="submit" class="primary">Apply now</button>
       </form>
+      <div id="map" style="height: 400px;"></div>
     </section>
   </article>
   `,
   styleUrls: ['./details.component.css'],
 })
-export class DetailsComponent {
+export class DetailsComponent implements AfterViewInit, OnDestroy{
   route: ActivatedRoute = inject(ActivatedRoute);
   housingService = inject(HousingService);
   housingLocation: HousingLocation | undefined;
@@ -69,12 +72,45 @@ export class DetailsComponent {
     lastName: new FormControl("", Validators.required),
     email: new FormControl("", Validators.email),
   });
+  private map: L.Map | undefined;
+
   constructor() {
-    const housingLocationId = parseInt(this.route.snapshot.params['id'], 10);
-    this.housingService.getHousingLocationById(housingLocationId).then((housingLocation) => {
-      this.housingLocation = housingLocation;
-    });
-    
+    const housingLocationId = parseInt(this.route.snapshot.params["id"], 10);
+    this.housingService
+      .getHousingLocationById(housingLocationId)
+      .then((housingLocation) => {
+        this.housingLocation = housingLocation;
+        this.initializeMap();
+      });
+    }
+
+  ngAfterViewInit(): void {
+    if (this.housingLocation) {
+      this.initializeMap();
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.map) {
+      this.map.remove();
+    }
+  }
+
+  private initializeMap(): void {
+    if (this.housingLocation && this.housingLocation.coordinates) {
+      const latitude = this.housingLocation.coordinates.latitude;
+      const longitude = this.housingLocation.coordinates.longitude;
+
+      if (!this.map) {
+        this.map = L.map('map').setView([latitude, longitude], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(this.map);
+      }
+
+      L.marker([latitude, longitude]).addTo(this.map);
+    }
   }
 
   submitApplication() {

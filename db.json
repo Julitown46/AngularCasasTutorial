@@ -181,7 +181,7 @@
       ]
     },
     {
-      "id": 10,
+      "id": "10",
       "name": "Casita",
       "city": "malaka",
       "state": "Florida",
@@ -191,6 +191,23 @@
       "laundry": false,
       "seguridad": [
         "puertas reforzadas",
+        "alarmas"
+      ]
+    },
+    {
+      "id": 11,
+      "name": "dadadadssgfd",
+      "city": "fdgdfgdsf",
+      "state": "gdsdfgfdsgfd",
+      "coordinates": {
+        "latitud": 2,
+        "longitud": 2
+      },
+      "photo": "",
+      "availableUnits": 3,
+      "wifi": true,
+      "laundry": false,
+      "seguridad": [
         "alarmas"
       ]
     }

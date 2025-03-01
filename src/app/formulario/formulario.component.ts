@@ -39,6 +39,14 @@ import { HousingLocation } from '../housinglocation';
             <input class="form-control" type="checkbox" id="laundry" formControlName="laundry">
             <label class="form-check-label" for="laundry">laundry</label>
         </div>
+        <div class="mb-3">
+            <label for="latitud" class="form-label">latitud:</label>
+            <input type="number" id="latitud" class="form-control" placeholder="latitud" formControlName="latitud">
+          </div>
+        <div class="mb-3">
+            <label for="longitud" class="form-label">longitud:</label>
+            <input type="number" id="longitud" class="form-control" placeholder="longitud" formControlName="longitud">
+          </div>
           <div class="mb-3">
             <label class="form-label">seguridad:</label>
             <div class="d-flex gap-3 justify-content-center">
@@ -79,6 +87,8 @@ constructor(private fb: FormBuilder, private housingService: HousingService){
     state: ['', [Validators.required]],
     photo: [''],
     availableUnits: ['', [Validators.required]],
+    latitude: ['', [Validators.required]],
+    longitude: ['', [Validators.required]],
     wifi: [false],
     laundry: [false],
     camaras: [false],
@@ -110,6 +120,10 @@ submit(){
       name: this.form.value.name,
       city: this.form.value.city,
       state: this.form.value.state,
+      coordinates:{
+        latitude: this.form.value.latitude,
+        longitude: this.form.value.longitude,
+      },
       photo: this.form.value.photo,
       availableUnits: this.form.value.availableUnits,
       wifi: this.form.value.wifi,
